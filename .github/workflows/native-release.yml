@@ -19,12 +19,17 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
-    env:
-      XDG_DATA_HOME: ${{ runner.temp }}/mosslight-data
-      XDG_CONFIG_HOME: ${{ runner.temp }}/mosslight-config
-      XDG_CACHE_HOME: ${{ runner.temp }}/mosslight-cache
     steps:
       - uses: actions/checkout@v4
+      - name: Set isolated build directories
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              for kind in ['DATA', 'CONFIG', 'CACHE']:
+                  output.write(f"XDG_{kind}_HOME={Path(os.environ['RUNNER_TEMP']) / ('mosslight-' + kind.lower())}\n")
+          PY
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
