@@ -1,5 +1,15 @@
 # 原生导出
 
+## 自动打包与下载
+
+工作流 `.github/workflows/native-release.yml` 在 `main` 更新 `release/version.txt` 或工作流时构建，也可通过 Actions 页面手动运行。构建使用 Godot 4.6.3、Java 17、Android SDK 和 NSIS，先运行原生回归，再检查 APK 签名和 Windows 安装/启动/卸载；所有作业成功后发布 GitHub 预览 Release。
+
+成品为 Android ARM64 APK、Windows x64 安装程序、Windows 免安装 ZIP，附 SHA-256 校验文件和源码提交信息。Windows 安装按当前用户进行，无需管理员权限，卸载保留用户存档。安装路径和开始菜单都由安装向导处理。
+
+预览 APK 使用缓存保存的开发测试 keystore；它不是正式渠道发行密钥。缓存失效可能改变测试证书，届时旧测试版不能直接覆盖安装，请先导出存档再卸载旧版。正式发行应改用所有者持久保管的签名密钥和仓库 Secrets，不能把私钥提交到源码或公开 Release。Windows 当前未做商业代码签名。
+
+构建会通过 `tools/prepare_distribution.gd` 从实际 Godot 引擎导出 MIT 与第三方声明到 `assets/licenses/`，并包含在 APK 与桌面版内。该目录的生成文件被 Git 忽略。
+
 ## 引擎与模板
 
 使用 Godot 4.6.3 Standard，安装同版本 Export Templates。工程使用 Compatibility 渲染器和 GDScript，不需要 .NET 或浏览器运行时。

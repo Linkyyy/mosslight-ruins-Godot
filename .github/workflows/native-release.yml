@@ -1,0 +1,157 @@
+name: Native installers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - release/version.txt
+      - .github/workflows/native-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      XDG_DATA_HOME: ${{ runner.temp }}/mosslight-data
+      XDG_CONFIG_HOME: ${{ runner.temp }}/mosslight-config
+      XDG_CACHE_HOME: ${{ runner.temp }}/mosslight-cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install native packaging tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y nsis
+          python3 -m pip install --disable-pip-version-check Pillow==11.3.0
+          sdkmanager "platform-tools" "build-tools;35.0.0" "platforms;android-35"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/mosslight-test-signing
+          key: mosslight-preview-android-signing-v1
+      - name: Install verified Godot engine and export templates
+        run: python3 tools/release/bootstrap.py
+      - name: Run native regression suite
+        run: python3 tools/check.py
+      - name: Configure export profile and prepare notices
+        run: |
+          python3 tools/release/configure.py
+          godot --headless --path . --script res://tools/prepare_distribution.gd
+          godot --headless --path . --editor --import
+      - name: Export Android and Windows
+        run: |
+          mkdir -p builds/android builds/windows
+          godot --headless --path . --export-debug Android builds/android/Mosslight.apk
+          godot --headless --path . --export-release "Windows Desktop" builds/windows/Mosslight.exe
+      - name: Verify APK signature, identity and architecture
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs builds/android/Mosslight.apk | tee builds/android/signature.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging builds/android/Mosslight.apk | tee builds/android/badging.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+          info = Path('builds/android/badging.txt').read_text()
+          assert "name='org.mosslight.ruins'" in info
+          assert "native-code: 'arm64-v8a'" in info
+          with zipfile.ZipFile('builds/android/Mosslight.apk') as apk:
+              assert 'lib/arm64-v8a/libgodot_android.so' in apk.namelist()
+              assert not any('/x86' in name for name in apk.namelist())
+          assert Path('builds/windows/Mosslight.exe').read_bytes()[:2] == b'MZ'
+          PY
+      - name: Package portable edition and Windows installer
+        run: |
+          python3 tools/release/package.py
+          makensis -DVERSION="$RELEASE_VERSION" release/windows/installer.nsi
+          python3 tools/release/package.py --checksums
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-installers
+          path: builds/distribution/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-validation
+          path: |
+            .user_test/regression.log
+            builds/android/signature.txt
+            builds/android/badging.txt
+          include-hidden-files: true
+          if-no-files-found: ignore
+
+  windows-smoke:
+    needs: build
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-installers
+          path: packages
+      - name: Install, launch native game, uninstall, and check portable edition
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = (Get-ChildItem packages/*-Setup.exe).FullName
+          $installPath = Join-Path $env:RUNNER_TEMP 'MosslightInstall'
+          $result = Start-Process $installer -ArgumentList '/S', "/D=$installPath" -Wait -PassThru
+          if ($result.ExitCode -ne 0) { throw 'Installer failed' }
+          $game = Join-Path $installPath 'Mosslight.exe'
+          if (!(Test-Path $game)) { throw 'Game missing after installation' }
+          $log = Join-Path $env:RUNNER_TEMP 'mosslight-installed.log'
+          $result = Start-Process $game -ArgumentList '--headless', '--quit-after', '180', '--max-fps', '60', '--log-file', $log, '--', '--autostart', '--fresh' -Wait -PassThru
+          if ($result.ExitCode -ne 0) { throw 'Installed game failed' }
+          $text = Get-Content $log -Raw
+          Write-Output $text
+          if ($text -match 'SCRIPT ERROR|ERROR:|Parse Error|Failed to load') { throw 'Native game runtime errors' }
+          $uninstaller = Join-Path $installPath 'Uninstall.exe'
+          Start-Process $uninstaller -ArgumentList '/S', "_?=$installPath" -Wait
+          if (Test-Path $game) { throw 'Uninstall did not remove game executable' }
+          $portable = (Get-ChildItem packages/*-Portable.zip).FullName
+          $portablePath = Join-Path $env:RUNNER_TEMP 'MosslightPortable'
+          Expand-Archive $portable -DestinationPath $portablePath
+          $portableGame = Join-Path $portablePath 'Mosslight/Mosslight.exe'
+          $portableLog = Join-Path $env:RUNNER_TEMP 'mosslight-portable.log'
+          $result = Start-Process $portableGame -ArgumentList '--headless', '--quit-after', '60', '--max-fps', '60', '--log-file', $portableLog -Wait -PassThru
+          if ($result.ExitCode -ne 0) { throw 'Portable game failed' }
+          if ((Get-Content $portableLog -Raw) -match 'SCRIPT ERROR|ERROR:|Parse Error|Failed to load') { throw 'Portable runtime errors' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-startup-logs
+          path: ${{ runner.temp }}/mosslight-*.log
+          if-no-files-found: ignore
+
+  publish:
+    needs: [build, windows-smoke]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-installers
+          path: packages
+      - name: Publish verified preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(cat release/version.txt)"
+          cd packages
+          sha256sum --check SHA256SUMS.txt
+          cd ..
+          gh release create "v$version" packages/* --target "$GITHUB_SHA" --title "苔光遗境 $version · Android / Windows" --notes-file release/NOTES.md --prerelease

@@ -10,3 +10,4 @@ builds/
 .env.*
 __pycache__/
 *.pyc
+/assets/licenses/Godot-*.txt

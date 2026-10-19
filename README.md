@@ -8,6 +8,8 @@
 
 ## 启动
 
+直接安装游戏：在 [Releases 下载页](https://github.com/Linkyyy/mosslight-ruins-Godot/releases) 选择 Android ARM64 APK、Windows x64 安装程序或免安装 ZIP。它们无需另装 Godot；源码编辑请使用下面的步骤。
+
 ```sh
 git clone https://github.com/Linkyyy/mosslight-ruins-Godot.git
 cd mosslight-ruins-Godot
@@ -103,8 +105,8 @@ godot --headless --path . res://tests/runner.tscn -- --test-profile
 
 ## 导出与当前边界
 
-已提供 Linux、Windows、Android 原生导出预设，参见 [导出说明](docs/EXPORT.md)。发布二进制需要与引擎版本匹配的导出模板；Android 还需要本机 SDK/JDK 和签名配置，凭证不入库。
+已提供 Linux、Windows、Android 原生导出预设，参见 [导出说明](docs/EXPORT.md)。GitHub Actions 使用校验过 SHA-256 的官方引擎和模板，生成 Android APK、Windows 安装版与免安装版，通过验收后发布到 Releases。发布版本由 `release/version.txt` 管理；签名材料不入库。
 
-当前自动验收以 Godot 4.6.3 的 headless 原生运行和回归为准。手机/手柄实机体验、窗口中的实际画面、Windows 可执行文件、Android 安装包和 iOS 导出需要相应设备与工具链进一步验收。仓库不包含未经验证的 APK 或桌面安装包。
+自动验收包含 Godot 4.6.3 headless 原生回归、APK 签名/包信息检查，以及 Windows 安装、原生启动、卸载与免安装版启动。预览 APK 使用开发测试签名，Windows 发行包未购买代码签名证书。手机/手柄实机体验、窗口画面和硬件兼容性仍需设备验收；iOS 尚未构建。
 
 字体授权和素材来源见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
