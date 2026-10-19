@@ -6,6 +6,9 @@ on:
     paths:
       - release/version.txt
       - .github/workflows/native-release.yml
+      - project.godot
+      - export_presets.cfg
+      - tools/release/**
   workflow_dispatch:
 
 permissions:
