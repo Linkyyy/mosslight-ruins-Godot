@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/room.gd" id="1_4lc1n"]
+[ext_resource type="PackedScene" path="res://scenes/world/platform.tscn" id="2_kjmnv"]
+[ext_resource type="Script" path="res://scripts/world/terrain.gd" id="3_kib41"]
+[ext_resource type="PackedScene" path="res://scenes/world/interactable.tscn" id="4_c2fif"]
+[ext_resource type="Script" path="res://scripts/world/world_object.gd" id="5_f0sex"]
+[ext_resource type="PackedScene" path="res://scenes/actors/enemy.tscn" id="6_3ekem"]
+[ext_resource type="Script" path="res://scripts/actors/enemy.gd" id="7_kurpe"]
+
+[node name="ThunderDepths" type="Node2D" unique_id=280294267]
+script = ExtResource("1_4lc1n")
+region_id = 3
+
+[node name="Geometry" type="Node2D" parent="." unique_id=1613207892]
+
+[node name="Ground0" type="StaticBody2D" parent="Geometry" unique_id=910700968 instance=ExtResource("2_kjmnv")]
+position = Vector2(0, 590)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_kib41")
+size = Vector2(600, 300)
+
+[node name="Ground1" type="StaticBody2D" parent="Geometry" unique_id=686633698 instance=ExtResource("2_kjmnv")]
+position = Vector2(940, 590)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_kib41")
+size = Vector2(900, 300)
+
+[node name="Ledge0" type="StaticBody2D" parent="Geometry" unique_id=748001337 instance=ExtResource("2_kjmnv")]
+position = Vector2(270, 460)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_kib41")
+size = Vector2(170, 18)
+
+[node name="Ledge1" type="StaticBody2D" parent="Geometry" unique_id=1445824768 instance=ExtResource("2_kjmnv")]
+position = Vector2(1090, 430)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_kib41")
+size = Vector2(140, 18)
+
+[node name="Objects" type="Node2D" parent="." unique_id=90478957]
+
+[node name="Lightning0" type="Area2D" parent="Objects" unique_id=252270332 instance=ExtResource("4_c2fif")]
+position = Vector2(390, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_f0sex")
+object_id = "lightning"
+
+[node name="Ice1" type="Area2D" parent="Objects" unique_id=982421705 instance=ExtResource("4_c2fif")]
+position = Vector2(1050, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_f0sex")
+object_id = "ice"
+
+[node name="Conductor2" type="Area2D" parent="Objects" unique_id=506684315 instance=ExtResource("4_c2fif")]
+position = Vector2(1175, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_f0sex")
+object_id = "conductor"
+
+[node name="Gate3" type="Area2D" parent="Objects" unique_id=755415717 instance=ExtResource("4_c2fif")]
+position = Vector2(1490, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_f0sex")
+object_id = "gate"
+
+[node name="SupplyMine4" type="Area2D" parent="Objects" unique_id=2137355674 instance=ExtResource("4_c2fif")]
+position = Vector2(1250, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_f0sex")
+object_id = "supply_mine"
+
+[node name="Enemies" type="Node2D" parent="." unique_id=293689733]
+
+[node name="Enemy0" type="CharacterBody2D" parent="Enemies" unique_id=89503140 instance=ExtResource("6_3ekem")]
+position = Vector2(420, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_kurpe")
+spawn_id = "3_0"
+
+[node name="Enemy1" type="CharacterBody2D" parent="Enemies" unique_id=1829743681 instance=ExtResource("6_3ekem")]
+position = Vector2(1300, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_kurpe")
+kind = "spore"
+spawn_id = "3_1"

@@ -1,0 +1,62 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/room.gd" id="1_x1pcp"]
+[ext_resource type="PackedScene" path="res://scenes/world/platform.tscn" id="2_23v7x"]
+[ext_resource type="Script" path="res://scripts/world/terrain.gd" id="3_3gr0q"]
+[ext_resource type="PackedScene" path="res://scenes/world/interactable.tscn" id="4_mwy5w"]
+[ext_resource type="Script" path="res://scripts/world/world_object.gd" id="5_l3e5a"]
+[ext_resource type="PackedScene" path="res://scenes/actors/enemy.tscn" id="6_ps6x8"]
+[ext_resource type="Script" path="res://scripts/actors/enemy.gd" id="7_75w6t"]
+
+[node name="AncientHeart" type="Node2D" unique_id=565848167]
+script = ExtResource("1_x1pcp")
+region_id = 5
+
+[node name="Geometry" type="Node2D" parent="." unique_id=57560981]
+
+[node name="Ground0" type="StaticBody2D" parent="Geometry" unique_id=567513594 instance=ExtResource("2_23v7x")]
+position = Vector2(0, 590)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_3gr0q")
+size = Vector2(1600, 300)
+
+[node name="Ledge0" type="StaticBody2D" parent="Geometry" unique_id=231197937 instance=ExtResource("2_23v7x")]
+position = Vector2(210, 455)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_3gr0q")
+size = Vector2(160, 18)
+
+[node name="Ledge1" type="StaticBody2D" parent="Geometry" unique_id=1251515855 instance=ExtResource("2_23v7x")]
+position = Vector2(1260, 455)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_3gr0q")
+size = Vector2(160, 18)
+
+[node name="Objects" type="Node2D" parent="." unique_id=730084190]
+
+[node name="PortalReturn0" type="Area2D" parent="Objects" unique_id=1745560738 instance=ExtResource("4_mwy5w")]
+position = Vector2(1440, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_l3e5a")
+object_id = "portal_return"
+
+[node name="Campfire" type="Area2D" parent="Objects" unique_id=1990796135 instance=ExtResource("4_mwy5w")]
+position = Vector2(140, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_l3e5a")
+object_id = "camp"
+
+[node name="Enemies" type="Node2D" parent="." unique_id=92474743]
+
+[node name="Enemy0" type="CharacterBody2D" parent="Enemies" unique_id=1239357122 instance=ExtResource("6_ps6x8")]
+position = Vector2(1070, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_75w6t")
+kind = "warden"
+spawn_id = "5_0"

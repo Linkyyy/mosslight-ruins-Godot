@@ -1,0 +1,39 @@
+[gd_scene load_steps=7 format=3]
+[ext_resource type="Script" path="res://scripts/game.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="2"]
+[ext_resource type="Script" path="res://scripts/world/atmosphere.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/effects/impact_fx.gd" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/ui/menu.tscn" id="6"]
+[node name="Mosslight" type="Node2D"]
+process_mode=3
+script=ExtResource("1")
+[node name="World" type="Node2D" parent="."]
+process_mode=1
+[node name="Atmosphere" type="Node2D" parent="World"]
+z_index=-20
+script=ExtResource("3")
+[node name="Player" parent="World" instance=ExtResource("2")]
+z_index=5
+position=Vector2(330,590)
+[node name="Effects" type="Node2D" parent="World"]
+z_index=20
+script=ExtResource("4")
+[node name="Camera" type="Camera2D" parent="World"]
+position=Vector2(640,360)
+position_smoothing_enabled=false
+[node name="HUDCanvas" type="CanvasLayer" parent="."]
+layer=100
+[node name="HUD" parent="HUDCanvas" instance=ExtResource("5")]
+[node name="MenuCanvas" type="CanvasLayer" parent="."]
+layer=200
+[node name="GameMenu" parent="MenuCanvas" instance=ExtResource("6")]
+[node name="RotateCanvas" type="CanvasLayer" parent="."]
+layer=210
+[node name="Rotate" type="ColorRect" parent="RotateCanvas"]
+anchors_preset=15
+anchor_right=1.0
+anchor_bottom=1.0
+grow_horizontal=2
+grow_vertical=2
+color=Color(0.05,0.15,0.13,1)

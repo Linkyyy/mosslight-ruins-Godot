@@ -1,0 +1,90 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/room.gd" id="1_7uhp4"]
+[ext_resource type="PackedScene" path="res://scenes/world/platform.tscn" id="2_5jnxw"]
+[ext_resource type="Script" path="res://scripts/world/terrain.gd" id="3_s4dpf"]
+[ext_resource type="PackedScene" path="res://scenes/world/interactable.tscn" id="4_ateer"]
+[ext_resource type="Script" path="res://scripts/world/world_object.gd" id="5_pu61h"]
+[ext_resource type="PackedScene" path="res://scenes/actors/enemy.tscn" id="6_a8fyl"]
+[ext_resource type="Script" path="res://scripts/actors/enemy.gd" id="7_uhpsg"]
+
+[node name="SunkenHall" type="Node2D" unique_id=1448970685]
+script = ExtResource("1_7uhp4")
+region_id = 1
+
+[node name="Geometry" type="Node2D" parent="." unique_id=633380898]
+
+[node name="Ground0" type="StaticBody2D" parent="Geometry" unique_id=541915160 instance=ExtResource("2_5jnxw")]
+position = Vector2(0, 590)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_s4dpf")
+size = Vector2(680, 300)
+
+[node name="Ground1" type="StaticBody2D" parent="Geometry" unique_id=408373664 instance=ExtResource("2_5jnxw")]
+position = Vector2(1080, 590)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_s4dpf")
+size = Vector2(880, 300)
+
+[node name="Ledge0" type="StaticBody2D" parent="Geometry" unique_id=1456081374 instance=ExtResource("2_5jnxw")]
+position = Vector2(280, 475)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_s4dpf")
+size = Vector2(180, 18)
+
+[node name="Ledge1" type="StaticBody2D" parent="Geometry" unique_id=1058132091 instance=ExtResource("2_5jnxw")]
+position = Vector2(1320, 450)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_s4dpf")
+size = Vector2(180, 18)
+
+[node name="Objects" type="Node2D" parent="." unique_id=968873849]
+
+[node name="Ice0" type="Area2D" parent="Objects" unique_id=979756328 instance=ExtResource("4_ateer")]
+position = Vector2(520, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_pu61h")
+object_id = "ice"
+
+[node name="Ice1" type="Area2D" parent="Objects" unique_id=1831003919 instance=ExtResource("4_ateer")]
+position = Vector2(1130, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_pu61h")
+object_id = "ice"
+
+[node name="Bow2" type="Area2D" parent="Objects" unique_id=1003997597 instance=ExtResource("4_ateer")]
+position = Vector2(1250, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_pu61h")
+object_id = "bow"
+
+[node name="SupplyWater3" type="Area2D" parent="Objects" unique_id=1237849711 instance=ExtResource("4_ateer")]
+position = Vector2(1400, 450)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_pu61h")
+object_id = "supply_water"
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1237608072]
+
+[node name="Enemy0" type="CharacterBody2D" parent="Enemies" unique_id=585984132 instance=ExtResource("6_a8fyl")]
+position = Vector2(1490, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_uhpsg")
+spawn_id = "1_0"
+
+[node name="Enemy1" type="CharacterBody2D" parent="Enemies" unique_id=1589383799 instance=ExtResource("6_a8fyl")]
+position = Vector2(1750, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_uhpsg")
+kind = "spore"
+spawn_id = "1_1"

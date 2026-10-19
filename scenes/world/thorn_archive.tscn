@@ -1,0 +1,90 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/room.gd" id="1_1ingf"]
+[ext_resource type="PackedScene" path="res://scenes/world/platform.tscn" id="2_1cg8g"]
+[ext_resource type="Script" path="res://scripts/world/terrain.gd" id="3_amfyb"]
+[ext_resource type="PackedScene" path="res://scenes/world/interactable.tscn" id="4_xgkok"]
+[ext_resource type="Script" path="res://scripts/world/world_object.gd" id="5_h14yq"]
+[ext_resource type="PackedScene" path="res://scenes/actors/enemy.tscn" id="6_aucls"]
+[ext_resource type="Script" path="res://scripts/actors/enemy.gd" id="7_5my6l"]
+
+[node name="ThornArchive" type="Node2D" unique_id=412491209]
+script = ExtResource("1_1ingf")
+region_id = 2
+
+[node name="Geometry" type="Node2D" parent="." unique_id=2103748657]
+
+[node name="Ground0" type="StaticBody2D" parent="Geometry" unique_id=1385620200 instance=ExtResource("2_1cg8g")]
+position = Vector2(0, 590)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_amfyb")
+size = Vector2(1800, 300)
+
+[node name="Ledge0" type="StaticBody2D" parent="Geometry" unique_id=1692061268 instance=ExtResource("2_1cg8g")]
+position = Vector2(410, 465)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_amfyb")
+size = Vector2(170, 18)
+
+[node name="Ledge1" type="StaticBody2D" parent="Geometry" unique_id=1138730798 instance=ExtResource("2_1cg8g")]
+position = Vector2(1180, 455)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_amfyb")
+size = Vector2(170, 18)
+
+[node name="Objects" type="Node2D" parent="." unique_id=257500782]
+
+[node name="Ice0" type="Area2D" parent="Objects" unique_id=1819023724 instance=ExtResource("4_xgkok")]
+position = Vector2(350, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_h14yq")
+object_id = "ice"
+
+[node name="Fire1" type="Area2D" parent="Objects" unique_id=1167978980 instance=ExtResource("4_xgkok")]
+position = Vector2(600, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_h14yq")
+object_id = "fire"
+
+[node name="Vines2" type="Area2D" parent="Objects" unique_id=1236417492 instance=ExtResource("4_xgkok")]
+position = Vector2(930, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_h14yq")
+object_id = "vines"
+
+[node name="Campfire" type="Area2D" parent="Objects" unique_id=1389277719 instance=ExtResource("4_xgkok")]
+position = Vector2(250, 590)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("5_h14yq")
+object_id = "camp"
+
+[node name="Enemies" type="Node2D" parent="." unique_id=363772463]
+
+[node name="Enemy0" type="CharacterBody2D" parent="Enemies" unique_id=1647718461 instance=ExtResource("6_aucls")]
+position = Vector2(660, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_5my6l")
+spawn_id = "2_0"
+
+[node name="Enemy1" type="CharacterBody2D" parent="Enemies" unique_id=1112246968 instance=ExtResource("6_aucls")]
+position = Vector2(1230, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_5my6l")
+kind = "spore"
+spawn_id = "2_1"
+
+[node name="Enemy2" type="CharacterBody2D" parent="Enemies" unique_id=2048381640 instance=ExtResource("6_aucls")]
+position = Vector2(1560, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_5my6l")
+spawn_id = "2_2"
