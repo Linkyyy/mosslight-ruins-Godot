@@ -30,10 +30,11 @@ jobs:
               for kind in ['DATA', 'CONFIG', 'CACHE']:
                   output.write(f"XDG_{kind}_HOME={Path(os.environ['RUNNER_TEMP']) / ('mosslight-' + kind.lower())}\n")
           PY
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
+      - uses: android-actions/setup-android@v3
       - name: Install native packaging tools
         run: |
           sudo apt-get update -qq
